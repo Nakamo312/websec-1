@@ -1,34 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Calculator</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<div class="wrapper">
-
-    <div class="top">
-        <input id="num1" type="number">
-
-        <select id="op">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <form id="calcForm">
+        <div class="top">
+          <input name="num1" type="number" />
+          <select name="op">
             <option value="+">+</option>
             <option value="-">-</option>
             <option value="*">*</option>
             <option value="/">/</option>
-        </select>
+          </select>
+          <input name="num2" type="number" />
+        </div>
+        <button type="submit" name="calc">подсчитать</button>
+      </form>
 
-        <input id="num2" type="number">
+      <div id="history"></div>
     </div>
 
-    <button id="calc">подсчитать</button>
-
-    <div id="history">
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
