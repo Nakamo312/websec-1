@@ -1,49 +1,60 @@
-const form = document.getElementById("calcForm");
-const history = document.getElementById("history");
+function getElementOrThrow(id) {
+  const element = document.getElementById(id);
+  if (!element) {
+    throw new Error(`Element with id "${id}" does not exist`);
+  }
+  return element;
+}
+
+function getFormFieldOrThrow(form, name) {
+  const field = form.elements[name];
+  if (!field) {
+    throw new Error(`Form field "${name}" does not exist`);
+  }
+  return field;
+}
+
+const form = getElementOrThrow("calcForm");
+const history = getElementOrThrow("history");
+
 const ops = {
   "+": (a, b) => a + b,
   "-": (a, b) => a - b,
   "*": (a, b) => a * b,
   "/": (a, b) => {
-    if (b === 0) throw new Error("Деление на ноль");
+    if (b === 0) throw new Error("Division by zero");
     return a / b;
   },
 };
+
+function addToHistory(text, isError = false) {
+  const currentNew = history.querySelector(".new");
+  if (currentNew) currentNew.className = "old";
+
+  const line = document.createElement("div");
+  line.textContent = isError ? `Error: ${text}` : text;
+  line.className = "new";
+
+  history.appendChild(line);
+
+  Array.from(history.children)
+    .slice(0, -3)
+    .forEach((el) => el.remove());
+}
 
 form.onsubmit = (e) => {
   e.preventDefault();
 
   try {
-    const num1 = form.elements.num1;
-    const num2 = form.elements.num2;
-    const op = form.elements.op;
+    const a = Number(getFormFieldOrThrow(form, "num1").value);
+    const b = Number(getFormFieldOrThrow(form, "num2").value);
+    const operator = getFormFieldOrThrow(form, "op").value;
 
-    const a = Number(num1.value);
-    const b = Number(num2.value);
-    const operator = op.value;
+    if (isNaN(a) || isNaN(b)) throw new Error("Invalid number");
+    if (!ops[operator]) throw new Error(`Unknown operator: ${operator}`);
 
-    const result = ops[operator](a, b);
-
-    const line = document.createElement("div");
-    line.textContent = `${a} ${operator} ${b} = ${result}`;
-    line.className = "new";
-
-    const currentNew = history.querySelector(".new");
-    if (currentNew) currentNew.className = "old";
-
-    history.appendChild(line);
-  } catch (e) {
-    const errorLine = document.createElement("div");
-    errorLine.textContent = `Ошибка: ${e.message}`;
-    errorLine.className = "new";
-
-    const currentNew = history.querySelector(".new");
-    if (currentNew) currentNew.className = "old";
-
-    history.appendChild(errorLine);
-  }
-
-  while (history.children.length > 3) {
-    history.removeChild(history.firstChild);
+    addToHistory(`${a} ${operator} ${b} = ${ops[operator](a, b)}`);
+  } catch (err) {
+    addToHistory(err.message, true);
   }
 };
